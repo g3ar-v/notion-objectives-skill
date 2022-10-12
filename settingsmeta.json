@@ -1,0 +1,24 @@
+{
+  "skillMetadata": {
+    "sections": [
+      {
+        "name": "Database access",
+        "fields": [
+          {
+            "name": "access_token",
+            "type": "text",
+            "label": "Access token",
+            "value": "",
+            "placeholder": "token"
+          },
+          {
+            "name": "database_id",
+            "type": "text",
+            "label": "Database ID",
+            "value": ""
+          }
+        ]
+      }
+    ]
+  }
+}
