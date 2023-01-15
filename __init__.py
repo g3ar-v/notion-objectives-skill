@@ -22,6 +22,7 @@ class NotionRoutine(MycroftSkill):
     
     def initialize(self):
         # TODO setup exception handling for no access token or database
+        
         self.log.info("initializing connection to notion...")
         self.database_page = []
         self.routine_dictionary = {} #Dictionary of time as KEY and goal as VALUE
@@ -69,14 +70,15 @@ class NotionRoutine(MycroftSkill):
                 'plain_text']
 
             # split up goals in the list
-            goal = goal_items.split(",")
+            goal = goal_items
 
-            if key not in self.routine_dictionary:
-                self.routine_dictionary[key] = []
-                self.routine_dictionary[key].extend(goal)
-            else:
-                pass
-                # TODO raise exception data not received from Notion
+            self.routine_dictionary[key] = goal
+            # if key not in self.routine_dictionary:
+            #     self.routine_dictionary[key] = []
+            #     # self.routine_dictionary[key].extend(goal)
+            # else:
+            #     pass
+            #     # TODO raise exception data not received from Notion
 
 
     def key_to_datetime(self):
@@ -136,5 +138,6 @@ def create_skill():
     return NotionRoutine()
 
 
-# if __name__ == '__main__':
-#     notion = NotionRoutine()
+if __name__ == '__main__':
+    notion = NotionRoutine()
+    notion.initialize()
