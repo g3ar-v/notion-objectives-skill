@@ -1,5 +1,7 @@
 import os
 import time
+import datetime
+from datetime import datetime as dt
 from dotenv import load_dotenv
 from notion_client import Client, APIErrorCode, APIResponseError
 from core import Skill, intent_handler
@@ -28,10 +30,8 @@ class ProductivitySkill(Skill):
         self.database_page = []
         self.notion_token = os.getenv("ACCESS_TOKEN")
         self.database_id = os.getenv("DATABASE_ID")
-
         self.notion = Client(auth=self.notion_token)
-
-        # self.schedule_repeating_event(self._load_routine, datetime.now(),)
+        self.get_today_schedules(dt.now())
 
     @intent_handler(IntentBuilder('PriorityObjectivesIntent').require(
         'objectives'))
@@ -80,6 +80,7 @@ class ProductivitySkill(Skill):
             if error.code == APIErrorCode.ObjectNotFound:
                 self.log.exception("could not connnect to database")
             self.log.exception(error)
+            self.speak(error)
         else:
             for index, objects in enumerate(self.database_page['results']):
                 self.obj.append(objects['properties'].get('objective', {}).get(
@@ -91,6 +92,13 @@ class ProductivitySkill(Skill):
             for obj in self.obj:
                 self.log.info(obj)
             self.notify(self.num_obj, self.obj, self.obj_color)
+
+    def get_today_schedules(self, time_now: datetime):
+        noon = datetime.time(12, 30, 0)
+        noon_today = dt.combine(time_now.date(), noon)
+
+        self.schedule_repeating_event(self._load_priority_objectives, noon_today,
+                                      5 * 3600, name="objective_schedule")
 
     def __save_reminder_local(self, obj, obj_type):
         if 'objectives' in self.settings:
