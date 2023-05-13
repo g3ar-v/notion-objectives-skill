@@ -8,23 +8,19 @@ from core import Skill, intent_handler
 from adapt.intent import IntentBuilder
 
 
-class ProductivitySkill(Skill):
+class NotionObjectivesSkill(Skill):
     """
     Notion skill to access notion database and run routine based on a notion database
     """
 
     def __init__(self):
-        super(ProductivitySkill, self).__init__()
+        super(NotionObjectivesSkill, self).__init__()
         self.notion_token = None
         self.database_id = None
 
     def initialize(self):
         # TODO setup exception handling for no access token or database
         load_dotenv()
-        # self.bus.on('speak', self.prime)
-        # self.bus.on('core.skill.handler.complete', self.notify)
-        # self.bus.on('core.skill.handler.start', self.reset)
-        self.obj = []
         self.obj_color = []
         self.number = 0
         self.database_page = []
@@ -33,9 +29,8 @@ class ProductivitySkill(Skill):
         self.notion = Client(auth=self.notion_token)
         self.get_today_schedules(dt.now())
 
-    @intent_handler(IntentBuilder('PriorityObjectivesIntent').require(
+    @intent_handler(IntentBuilder('PriorityObjectivesIntent').require('Query').require(
         'objectives'))
-    # @intent_handler('PriorityObjectives.intent')
     def _load_priority_objectives(self):
         """ Loads priority 1 objectives from notion"""
         try:
@@ -88,9 +83,6 @@ class ProductivitySkill(Skill):
                 self.obj_color.append(objects['properties'].get('Type', {}).get(
                     'select', {}).get('color', {}))
                 self.num_obj = index + 1
-            # for i in zip(range(1, self.num_obj), self.obj_color, self.obj):
-            for obj in self.obj:
-                self.log.info(obj)
             self.notify(self.num_obj, self.obj, self.obj_color)
 
     def get_today_schedules(self, time_now: datetime):
@@ -122,12 +114,7 @@ class ProductivitySkill(Skill):
         """ Stop the skill"""
         self.running = False
 
+
 def create_skill():
     """ Create skill and return it to the loader"""
-    return ProductivitySkill()
-
-
-if __name__ == '__main__':
-    notion = ProductivitySkill()
-    notion.initialize()
-    notion._load_priority_objectives()
+    return NotionObjectivesSkill()
