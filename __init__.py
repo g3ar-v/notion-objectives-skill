@@ -21,6 +21,7 @@ class NotionObjectivesSkill(Skill):
     def initialize(self):
         # TODO setup exception handling for no access token or database
         load_dotenv()
+        self.obj = []
         self.obj_color = []
         self.number = 0
         self.database_page = []
@@ -100,7 +101,7 @@ class NotionObjectivesSkill(Skill):
 
     def notify(self, number, obj, color):
         """ Notifies user of goal"""
-        self.speak_dialog('Sir', {'number': number, 'obj': obj})
+        self.speak_dialog('Notify', {'number': number, 'obj': obj})
         for objectives in zip(range(1, number+1), color, obj):
             self.speak("{}, A {}: {}".format(
                 objectives[0], 'task' if objectives[1] == 'yellow' else 'bug',
